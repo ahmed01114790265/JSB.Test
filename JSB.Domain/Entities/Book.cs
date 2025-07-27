@@ -17,6 +17,6 @@ public class Book
         public int Stock { get; set; }  
 
         public Guid CategoryId { get; set; }
-        public  Category category  { get; set; }
+        public virtual Category category  { get; set; }
     }
 }
