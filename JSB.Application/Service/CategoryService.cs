@@ -15,18 +15,16 @@ namespace JSB.Application.Service
     public class CategoryService : ICategoryService
     {
         private readonly ICategoryFactory _categoryFactory;
-        private readonly ICategoryRepository _categoryRepository;
         private readonly IUnitOfWork _unitOfWork;
-        public CategoryService(ICategoryFactory categoryFactory, ICategoryRepository categoryRepository, IUnitOfWork unitOfWork)
+        public CategoryService(ICategoryFactory categoryFactory, IUnitOfWork unitOfWork)
         {
             _categoryFactory = categoryFactory;
-            _categoryRepository = categoryRepository;
             _unitOfWork = unitOfWork;
         }
         public async Task<ResultModel<Guid>> AddCategory(CategoryDTO categoryDTO)
         {
             var category = _categoryFactory.CreateCategory(categoryDTO);
-            _categoryRepository.CreateCategory(category);
+            _unitOfWork.CategoryRepository.CreateCategory(category);
             await _unitOfWork.SaveChangesAsync();
             return new ResultModel<Guid>()
             {
@@ -36,7 +34,7 @@ namespace JSB.Application.Service
         }
         public async Task<ResultModel<CategoryDTO>> GetCategoryById(Guid categoryId)
         {
-            var category = await _categoryRepository.GetCategoryById(categoryId);
+            var category = await _unitOfWork.CategoryRepository.GetCategoryById(categoryId);
             if (category == null)
             {
                 return new ResultModel<CategoryDTO>()
@@ -54,7 +52,7 @@ namespace JSB.Application.Service
         }
         public async Task<ResultList<CategoryDTO>> GetAllCategories()
         {
-            var categories = await _categoryRepository.GetCategories();
+            var categories = await _unitOfWork.CategoryRepository.GetCategories();
             if (categories == null || !categories.Any())
             {
                 return new ResultList<CategoryDTO>()
@@ -80,7 +78,7 @@ namespace JSB.Application.Service
                     ErrorMessage = "Invalid book ID"
                 };
             }
-            var category = await _categoryRepository.GetCategoryById(categoryDTO.Id.Value);
+            var category = await _unitOfWork.CategoryRepository.GetCategoryById(categoryDTO.Id.Value);
             if (category == null)
             {
                 return new ResultModel<Guid>()
@@ -99,7 +97,7 @@ namespace JSB.Application.Service
         }
         public async Task<ResultModel<bool>> DeleteCategory(Guid categoryId)
         {
-            var category = await _categoryRepository.GetCategoryById(categoryId);
+            var category = await _unitOfWork.CategoryRepository.GetCategoryById(categoryId);
             if (category == null)
             {
                 return new ResultModel<bool>()
@@ -108,7 +106,7 @@ namespace JSB.Application.Service
                     ErrorMessage = "Category not found"
                 };
             }
-            await _categoryRepository.DeleteCategory(category);
+            await _unitOfWork.CategoryRepository.DeleteCategory(category);
             await _unitOfWork.SaveChangesAsync();
             return new ResultModel<bool>()
             {

@@ -15,21 +15,17 @@ namespace JSB.Application.Service
     public class BookService : IBookService
     {
         private readonly IBookFactory _bookFactory;
-        private readonly IBookRepository _bookRepository;
-        private readonly ICategoryRepository _categoryRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public BookService(IBookFactory bookFactory, IBookRepository bookRepository,ICategoryRepository categoryRepository ,IUnitOfWork unitOfWork)
+        public BookService(IBookFactory bookFactory,IUnitOfWork unitOfWork)
         {
             _bookFactory = bookFactory;
-            _bookRepository = bookRepository;
-            _categoryRepository = categoryRepository;
             _unitOfWork = unitOfWork;
         }
         public async Task<ResultModel<Guid>>  AddBook(BookDTO bookDTO)
         {
 
-            bool Categorycheck = await _categoryRepository.CheckCategoryId(bookDTO.CategoryId);
+            bool Categorycheck = await _unitOfWork.CategoryRepository.CheckCategoryId(bookDTO.CategoryId);
             if (!Categorycheck)
             {
                 return new ResultModel<Guid>()
@@ -40,7 +36,7 @@ namespace JSB.Application.Service
             }
 
             var book = _bookFactory.CreateBook(bookDTO);
-            _bookRepository.CreateBook(book);
+            _unitOfWork.BookRepository.CreateBook(book);
             await _unitOfWork.SaveChangesAsync();
             return new ResultModel<Guid>()
             {
@@ -50,7 +46,7 @@ namespace JSB.Application.Service
         }
         public async Task<ResultModel<BookDTO>> GetBookById(Guid bookId)
         {
-            var book = await _bookRepository.GetBookById(bookId);
+            var book = await _unitOfWork.BookRepository.GetBookById(bookId);
             if (book == null)
             {
                 return new ResultModel<BookDTO>()
@@ -68,7 +64,7 @@ namespace JSB.Application.Service
         }
         public async Task<ResultList<BookDTO>> GetAllBooks()
         {
-            var books = await _bookRepository.GetBooks();
+            var books = await _unitOfWork.BookRepository.GetBooks();
             if (books == null || !books.Any())
             {
                 return new ResultList<BookDTO>()
@@ -86,7 +82,7 @@ namespace JSB.Application.Service
         }
         public async Task<ResultModel<bool>> DeleteBook(Guid bookId)
         {
-           var book = await _bookRepository.GetBookById(bookId);
+           var book = await _unitOfWork.BookRepository.GetBookById(bookId);
             if (book == null)
             {
                 return new ResultModel<bool>()
@@ -95,7 +91,7 @@ namespace JSB.Application.Service
                     ErrorMessage = "Book not found"
                 };
             }
-            await _bookRepository.DeleteBook(book);
+            await _unitOfWork.BookRepository.DeleteBook(book);
             await _unitOfWork.SaveChangesAsync();
             return new ResultModel<bool>()
             {
@@ -105,7 +101,7 @@ namespace JSB.Application.Service
 
 
         }
-        public async Task<ResultModel<Guid>> UpdateBook( BookDTO bookDTO)
+        public async Task<ResultModel<Guid>> UpdateBook(BookDTO bookDTO)
         {
             if (!bookDTO.Id.HasValue)
             {
@@ -115,7 +111,7 @@ namespace JSB.Application.Service
                     ErrorMessage = "Book ID mismatch"
                 };
             }
-            var book = await _bookRepository.GetBookById(bookDTO.Id.Value);
+            var book = await _unitOfWork.BookRepository.GetBookById(bookDTO.Id.Value);
             if (book == null)
             {
                 return new ResultModel<Guid>()

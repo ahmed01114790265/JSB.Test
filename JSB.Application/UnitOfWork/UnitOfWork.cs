@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JSB.Domain.Repository;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,10 +10,14 @@ namespace JSB.Domain.UnitOfWork
    public class UnitOfWork : IUnitOfWork
     {
         JSBDbContext JSBDbContext;
+       public IBookRepository BookRepository { get; }
+       public ICategoryRepository CategoryRepository { get; }
 
-        public UnitOfWork(JSBDbContext jSBDbContext)
+        public UnitOfWork(JSBDbContext jSBDbContext,IBookRepository bookRepository ,ICategoryRepository categoryRepository)
         {
             JSBDbContext = jSBDbContext;
+            this.BookRepository = bookRepository;
+            this.CategoryRepository = categoryRepository;
         }
         public bool SaveChanges()
         {
@@ -24,6 +29,7 @@ namespace JSB.Domain.UnitOfWork
             await JSBDbContext.SaveChangesAsync();
             return true;
         }
+        
 
 
     }
