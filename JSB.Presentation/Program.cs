@@ -12,26 +12,35 @@ public class program
     {
         var builder = WebApplication.CreateBuilder(args);
         
-        builder.Services.AddApplication(builder.Configuration);
-        
         builder.Services.AddControllers();
+
         builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
+
+        builder.Services.AddApplication(builder.Configuration);
 
         var app = builder.Build();
 
       
-
-        app.UseStaticFiles();
-        app.UseRouting();
-        app.UseCors();
-      
-        app.UseEndpoints(endpoints =>
+        app.UseSwagger();
+        app.UseSwaggerUI(c =>
         {
-            endpoints.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Product}/{action=Index}"
-               );
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "JSB API V1");
         });
+        app.Use(async (context, next) =>
+        {
+            if (context.Request.Path == "/")
+            {
+                context.Response.Redirect("/swagger");
+                return;
+            }
+
+            await next();
+        });
+
+        app.UseHttpsRedirection();
+        app.UseAuthorization();
+      
         app.MapControllers();
         app.Run();
 

@@ -16,16 +16,29 @@ namespace JSB.Application.Service
     {
         private readonly IBookFactory _bookFactory;
         private readonly IBookRepository _bookRepository;
+        private readonly ICategoryRepository _categoryRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public BookService(IBookFactory bookFactory, IBookRepository bookRepository, IUnitOfWork unitOfWork)
+        public BookService(IBookFactory bookFactory, IBookRepository bookRepository,ICategoryRepository categoryRepository ,IUnitOfWork unitOfWork)
         {
             _bookFactory = bookFactory;
             _bookRepository = bookRepository;
+            _categoryRepository = categoryRepository;
             _unitOfWork = unitOfWork;
         }
         public async Task<ResultModel<Guid>>  AddBook(BookDTO bookDTO)
         {
+
+            bool Categorycheck = await _categoryRepository.CheckCategoryId(bookDTO.CategoryId);
+            if (!Categorycheck)
+            {
+                return new ResultModel<Guid>()
+                {
+                    IsValid = false,
+                    ErrorMessage = "Category not found"
+                };
+            }
+
             var book = _bookFactory.CreateBook(bookDTO);
             _bookRepository.CreateBook(book);
             await _unitOfWork.SaveChangesAsync();

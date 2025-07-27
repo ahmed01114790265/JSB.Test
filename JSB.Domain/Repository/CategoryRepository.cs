@@ -31,5 +31,9 @@ namespace JSB.Domain.Repository
         {
             _context.Categories.Remove(category);
         }
+        public async Task<bool> CheckCategoryId(Guid categoryId)
+        {
+            return await _context.Categories.AnyAsync(c => c.Id == categoryId);
+        }
     }
 }

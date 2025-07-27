@@ -13,5 +13,6 @@ namespace JSB.Domain.Repository
         Task<Category> GetCategoryById(Guid CategoryId);
         Task<List<Category>> GetCategories();
         Task DeleteCategory(Category category);
+        Task<bool> CheckCategoryId(Guid categoryId);
     }
 }

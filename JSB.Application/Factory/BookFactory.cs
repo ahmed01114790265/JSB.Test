@@ -21,7 +21,8 @@ namespace JSB.Application.Factory
                 Author = bookDTO.Author,
                 Description = bookDTO.Description,
                 Price = bookDTO.Price,
-                Stock = bookDTO.Stock
+                Stock = bookDTO.Stock,
+                CategoryId = bookDTO.CategoryId
             };
         }
         public BookDTO CreateBookDTO(Book book)

@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace JSB.Application.Service
 {
-   public class CategoryService : ICategoryService
+    public class CategoryService : ICategoryService
     {
         private readonly ICategoryFactory _categoryFactory;
         private readonly ICategoryRepository _categoryRepository;
@@ -72,7 +72,7 @@ namespace JSB.Application.Service
         }
         public async Task<ResultModel<Guid>> UpdateCategory(CategoryDTO categoryDTO)
         {
-            if(!categoryDTO.Id.HasValue)
+            if (!categoryDTO.Id.HasValue)
             {
                 return new ResultModel<Guid>()
                 {
@@ -89,7 +89,7 @@ namespace JSB.Application.Service
                     ErrorMessage = "Category not found"
                 };
             }
-            _categoryFactory.UpdateCategory(category,categoryDTO);
+            _categoryFactory.UpdateCategory(category, categoryDTO);
             await _unitOfWork.SaveChangesAsync();
             return new ResultModel<Guid>()
             {
@@ -108,7 +108,7 @@ namespace JSB.Application.Service
                     ErrorMessage = "Category not found"
                 };
             }
-           await _categoryRepository.DeleteCategory(category);
+            await _categoryRepository.DeleteCategory(category);
             await _unitOfWork.SaveChangesAsync();
             return new ResultModel<bool>()
             {
@@ -116,5 +116,6 @@ namespace JSB.Application.Service
                 Model = true
             };
         }
+
     }
 }
