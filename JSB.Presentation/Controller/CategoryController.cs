@@ -14,8 +14,9 @@ namespace JSB.Presentation.Controller
         {
             _categoryService = categoryService;
         }
+
         [HttpGet]
-        public async Task<IActionResult> ListOfAllCategories()
+        public async Task<IActionResult> GetAllCategories()
         {
             var categories = await _categoryService.GetAllCategories();
             if (categories.ModelList == null || categories.IsValid == false)
@@ -24,6 +25,7 @@ namespace JSB.Presentation.Controller
             }
             return Ok(categories.ModelList);
         }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCategoryById(Guid id)
         {
@@ -34,12 +36,23 @@ namespace JSB.Presentation.Controller
             }
             return Ok(category.Model);
         }
+
         [HttpPost]
-        public async Task<IActionResult> CreateNewCategory([FromBody] CategoryDTO categoryDTO)
+        public async Task<IActionResult> AddCategory([FromBody] CategoryDTO categoryDTO)
         {
             if (categoryDTO == null)
             {
                 return BadRequest("Invalid category data.");
+            }
+           
+            if (!ModelState.IsValid)
+            {
+                var errorMessage = ModelState.Values
+                    .SelectMany(x => x.Errors)
+                    .Select(x => x.ErrorMessage)
+                    .ToList();
+                return BadRequest(new { Errors = errorMessage });
+
             }
             var result = await _categoryService.AddCategory(categoryDTO);
             if (!result.IsValid)
@@ -48,12 +61,21 @@ namespace JSB.Presentation.Controller
             }
             return Ok(result);
         }
+
         [HttpPut]
         public async Task<IActionResult> UpdateCategory([FromBody]CategoryDTO categoryDTO)
         {
             if (categoryDTO == null)
             {
                 return BadRequest("Invalid category data.");
+            }
+            if (!ModelState.IsValid)
+            {
+                var errorMessage = ModelState.Values
+                    .SelectMany(x => x.Errors)
+                    .Select(x => x.ErrorMessage)
+                    .ToList();
+                return BadRequest(new { Errors = errorMessage });
             }
             var result = await _categoryService.UpdateCategory(categoryDTO);
             if (!result.IsValid)
@@ -62,6 +84,7 @@ namespace JSB.Presentation.Controller
             }
             return Ok(result);
         }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategory(Guid id)
         {

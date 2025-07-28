@@ -10,9 +10,13 @@ namespace JSB.Contracts.DTO
     public class CategoryDTO
     {
         public Guid? Id { get; set; }
-        [Required]
+
+        [Required(ErrorMessage ="Name is required")]
+        [MaxLength(50,ErrorMessage ="Length mustnot be more than50")]
         public string Name { get; set; }
-        [Required]
+
+        [Required(ErrorMessage ="Descriotion is required")]
+        [MaxLength(400, ErrorMessage = "Length must not be more than 400")]
         public string Description { get; set; }
     }
 }

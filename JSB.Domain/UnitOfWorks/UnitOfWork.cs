@@ -1,4 +1,5 @@
 ﻿using JSB.Domain.Repository;
+using JSB.Domain.UnitOfWork;
 using System;
 using System.Collections.Generic;
 using System.Linq;

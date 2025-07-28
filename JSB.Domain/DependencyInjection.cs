@@ -1,4 +1,5 @@
 ﻿using JSB.Domain.Repository;
+using JSB.Domain.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +18,7 @@ namespace JSB.Domain
             service.AddDbContext<JSBDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("cs")));
             service.AddScoped<IBookRepository, BookRepository>();   
             service.AddScoped<ICategoryRepository, CategoryReposit>();
+            service.AddScoped<IUnitOfWork, UnitOfWork.UnitOfWork>();
 
             return service;
         }

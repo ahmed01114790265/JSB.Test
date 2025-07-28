@@ -19,8 +19,7 @@ namespace JSB.Application
         public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddJSBDbContext(configuration);
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
-
+           
             services.AddScoped<IBookService, BookService>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IBookFactory, BookFactory>();

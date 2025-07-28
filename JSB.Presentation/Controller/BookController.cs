@@ -14,8 +14,9 @@ namespace JSB.Presentation.Controller
         {
             _bookService = bookService;
         }
+
         [HttpGet]
-     public async Task<IActionResult> ListOfAllBooks()
+     public async Task<IActionResult> GetAllBooks()
         {
             var books = await _bookService.GetAllBooks();
             if (books.ModelList == null || books.IsValid==false)
@@ -24,6 +25,7 @@ namespace JSB.Presentation.Controller
             }
             return Ok(books.ModelList);
         }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBookById(Guid id)
         {
@@ -34,12 +36,21 @@ namespace JSB.Presentation.Controller
             }
             return Ok(book.Model);
         }
+
         [HttpPost]
-        public async Task<IActionResult> CreateNewBook([FromBody] BookDTO bookDTO)
+        public async Task<IActionResult> AddBook([FromBody] BookDTO bookDTO)
         {
             if (bookDTO == null)
             {
                 return BadRequest("Invalid book data.");
+            }
+            if (!ModelState.IsValid)
+            {
+                var errorMessage = ModelState.Values
+                    .SelectMany(x => x.Errors)
+                    .Select(x => x.ErrorMessage)
+                    .ToList();
+                return BadRequest(new { Errors = errorMessage });
             }
             var result = await _bookService.AddBook(bookDTO);
             if (!result.IsValid)
@@ -48,12 +59,21 @@ namespace JSB.Presentation.Controller
             }
             return Ok(result);
         }
+
         [HttpPut]
         public async Task<IActionResult> UpdateBook([FromBody] BookDTO bookDTO)
         {
             if (bookDTO == null)
             {
                 return BadRequest("Invalid book data.");
+            }
+            if (!ModelState.IsValid)
+            {
+                var errorMessage = ModelState.Values
+                    .SelectMany(x => x.Errors)
+                    .Select(x => x.ErrorMessage)
+                    .ToList();
+                return BadRequest(new { Errors = errorMessage });
             }
             var result = await _bookService.UpdateBook(bookDTO);
             if (!result.IsValid)
@@ -62,6 +82,7 @@ namespace JSB.Presentation.Controller
             }
             return Ok(result);
         }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBook(Guid id)
         {
